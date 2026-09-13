@@ -8,7 +8,7 @@ import freelance from "../assets/Mobile service.svg";
 import shopping from "../assets/emily.svg";
 import chip from "../assets/chip.svg";
 import app from "../assets/applee.svg";
-import mike from "../assets/Michael 2.svg";
+import mike from "../assets/michael 2.svg";
 import ps from "../assets/PS 2.svg";
 import pro from "../assets/william 2.svg";
 
