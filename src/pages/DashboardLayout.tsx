@@ -113,7 +113,7 @@ const DashboardLayout = () => {
     // min-h-screen + bg color here wraps the header AND the <Outlet />
     // below, so every page rendered through this layout inherits the
     // same background color across the full height of the viewport.
-    <div className="min-h-screen bg-[#F5F7FA]">
+    <div className="min-h-dvh bg-[#F5F7FA]">
       <div className="p-7 px-4">
         <div className="flex px-4 gap-8 justify-between">
           <button
