@@ -66,12 +66,17 @@ const Settings = () => {
   const [activeTab, setActiveTab] = useState("Edit Profile");
   const [formValues, setFormValues] = useState<Record<string, string>>({});
 
-  // Loading state for Save button
+  // Loading state & success feedback
   const [isLoading, setIsLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
 
-  // Get currently saved image from localStorage (or default fallback)
+  // Saved image from localStorage (or default fallback)
   const [savedProfilePic, setSavedProfilePic] = useState<string>(() => {
-    return localStorage.getItem("user_profile_picture") || profilePic;
+    try {
+      return localStorage.getItem("user_profile_picture") || profilePic;
+    } catch {
+      return profilePic;
+    }
   });
 
   // Staging/Preview state: holds selected image BEFORE saving
@@ -93,15 +98,54 @@ const Settings = () => {
     fileInputRef.current?.click();
   };
 
-  const handleImageUpload = (e: ChangeEvent<HTMLInputElement>) => {
+  // Helper to compress and resize image so it fits comfortably in localStorage
+  const compressImage = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target?.result as string;
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          const maxSize = 250; // Resize to 250x250 max for avatars
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > maxSize) {
+              height = Math.round((height * maxSize) / width);
+              width = maxSize;
+            }
+          } else {
+            if (height > maxSize) {
+              width = Math.round((width * maxSize) / height);
+              height = maxSize;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+
+          const ctx = canvas.getContext("2d");
+          ctx?.drawImage(img, 0, 0, width, height);
+          resolve(canvas.toDataURL("image/jpeg", 0.8)); // 80% JPEG quality
+        };
+        img.onerror = (error) => reject(error);
+      };
+      reader.onerror = (error) => reject(error);
+    });
+  };
+
+  const handleImageUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64String = reader.result as string;
-        setPreviewPic(base64String); // Stage image temporarily
-      };
-      reader.readAsDataURL(file);
+      try {
+        const compressedBase64 = await compressImage(file);
+        setPreviewPic(compressedBase64); // Stage compressed preview
+      } catch (error) {
+        console.error("Error processing image upload:", error);
+      }
     }
   };
 
@@ -117,35 +161,47 @@ const Settings = () => {
     setActiveTab(tab);
   };
 
-  // Async save handler with simulated loading delay
-  const handleSave = async () => {
+  const handleSave = () => {
     setIsLoading(true);
+    setSuccessMessage("");
 
-    // Simulate standard request/save delay
     setTimeout(() => {
-      // 1. Permanently store saved image in localStorage
-      localStorage.setItem("user_profile_picture", previewPic);
-      setSavedProfilePic(previewPic);
+      try {
+        // 1. Permanently store saved image in localStorage
+        localStorage.setItem("user_profile_picture", previewPic);
+        setSavedProfilePic(previewPic);
 
-      // 2. Trigger global window event to inform DashboardLayout
-      window.dispatchEvent(new Event("profilePicUpdated"));
+        // 2. Dispatch custom event to notify DashboardLayout
+        window.dispatchEvent(new Event("profilePicUpdated"));
 
-      setIsLoading(false);
+        // 3. Set success message
+        setSuccessMessage("Profile picture updated successfully!");
 
-      console.log("Saving settings for:", activeTab, {
-        formValues,
-        preferences,
-        twoFactorAuth,
-        userProfilePic: previewPic,
-      });
-    }, 1200);
+        // Auto hide success message after 3 seconds
+        setTimeout(() => {
+          setSuccessMessage("");
+        }, 3000);
+      } catch (error) {
+        console.error("Failed to save profile settings:", error);
+        alert("Failed to save image. The file size might be too large.");
+      } finally {
+        setIsLoading(false);
+      }
+    }, 1000);
   };
 
   const tabs = ["Edit Profile", "Preference", "Security"];
 
   return (
     <div className="pb-8">
-      <div className="w-full max-w-sm mx-auto bg-white rounded-[15px] p-6 shadow-sm border border-gray-100">
+      <div className="w-full max-w-sm mx-auto bg-white rounded-[15px] p-6 shadow-sm border border-gray-100 relative">
+        {/* Success Banner Message */}
+        {successMessage && (
+          <div className="mb-4 p-3 bg-emerald-50 border border-emerald-200 text-emerald-700 text-[13px] rounded-[10px] text-center font-medium transition-all">
+            {successMessage}
+          </div>
+        )}
+
         {/* Navigation Tabs */}
         <div className="flex justify-between border-b border-gray-200 mb-6">
           {tabs.map((tab) => (
@@ -406,7 +462,7 @@ const Settings = () => {
           </div>
         )}
 
-        {/* Save Button with Loading State */}
+        {/* Save Button */}
         <button
           type="button"
           onClick={handleSave}

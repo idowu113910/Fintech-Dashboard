@@ -78,11 +78,9 @@ const menuItems: MenuItem[] = [
   },
 ];
 
-const ACTIVE_IMAGE_FILTER =
+// SVG CSS filter tuned to tint images to #1814F3 for all states
+const BRAND_IMAGE_FILTER =
   "invert(13%) sepia(94%) saturate(7191%) hue-rotate(244deg) brightness(96%) contrast(106%)";
-
-const INACTIVE_IMAGE_FILTER =
-  "invert(72%) sepia(0%) saturate(0%) hue-rotate(180deg) brightness(90%) contrast(90%)";
 
 const DashboardLayout = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -192,8 +190,7 @@ const DashboardLayout = () => {
             </button>
 
             {menuItems.map((item) => {
-              const isActive = checkIsActive(item.path);
-              const colorClass = isActive ? "text-[#1814F3]" : "text-[#B1B1B1]";
+              const colorClass = "text-[#1814F3]";
               const Icon = item.icon;
 
               return (
@@ -209,9 +206,7 @@ const DashboardLayout = () => {
                       alt=""
                       className="w-5 h-5 shrink-0 transition-all duration-200"
                       style={{
-                        filter: isActive
-                          ? ACTIVE_IMAGE_FILTER
-                          : INACTIVE_IMAGE_FILTER,
+                        filter: BRAND_IMAGE_FILTER,
                       }}
                     />
                   ) : (
