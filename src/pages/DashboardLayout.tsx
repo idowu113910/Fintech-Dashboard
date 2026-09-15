@@ -78,21 +78,23 @@ const menuItems: MenuItem[] = [
   },
 ];
 
-// SVG CSS filter tuned to tint images to #1814F3 for all states
-const BRAND_IMAGE_FILTER =
+// SVG filter tuned for active state (#1814F3)
+const ACTIVE_IMAGE_FILTER =
   "invert(13%) sepia(94%) saturate(7191%) hue-rotate(244deg) brightness(96%) contrast(106%)";
+
+// SVG filter tuned for unclicked/inactive state (#B1B1B1)
+const INACTIVE_IMAGE_FILTER =
+  "invert(78%) sepia(0%) saturate(0%) hue-rotate(180deg) brightness(88%) contrast(85%)";
 
 const DashboardLayout = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const location = useLocation();
 
-  // Shared state for the navbar profile picture
   const [navbarProfilePic, setNavbarProfilePic] = useState<string>(() => {
     return localStorage.getItem("user_profile_picture") || girl;
   });
 
-  // Event listener to reactively update the avatar when user saves in Settings
   useEffect(() => {
     const handleUpdate = () => {
       const updatedPic = localStorage.getItem("user_profile_picture");
@@ -137,35 +139,35 @@ const DashboardLayout = () => {
             type="button"
             onClick={() => setIsMenuOpen(true)}
             aria-label="Open menu"
+            className="p-1 hover:bg-gray-100 rounded-lg transition"
           >
-            <RxHamburgerMenu className="mt-1" />
+            <RxHamburgerMenu className="mt-1 text-2xl text-[#343C6A]" />
           </button>
 
           <h1 className="text-[20px] text-[#343C6A] font-semibold">
             {pageTitle}
           </h1>
 
-          {/* Dynamically updated profile picture */}
           <img
             src={navbarProfilePic}
             alt="User Profile"
-            className="w-8.75 h-8.75 rounded-full object-cover"
+            className="w-9 h-9 rounded-full object-cover border border-gray-200"
           />
         </div>
 
-        <div className="w-full px-4 mt-12">
+        <div className="w-full px-4 mt-8">
           <div className="relative w-full">
             <input
               type="text"
               placeholder="Search for something"
-              className="w-full h-12 rounded-[40px] py-3.5 pl-11 pr-11 outline-none bg-white placeholder:text-[13px] text-[#8BA3CB] font-normal"
+              className="w-full h-12 rounded-[40px] py-3.5 pl-11 pr-11 outline-none bg-white placeholder:text-[13px] text-[#8BA3CB] font-normal border border-transparent focus:border-[#1814F3] transition"
             />
-            <IoIosSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8BA3CB] pointer-events-none" />
+            <IoIosSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8BA3CB] text-xl pointer-events-none" />
           </div>
         </div>
       </div>
 
-      {/* Slide-in menu drawer */}
+      {/* Hamburger Menu Drawer */}
       {isMenuOpen && (
         <div className="fixed inset-0 z-50 flex">
           <div
@@ -183,14 +185,17 @@ const DashboardLayout = () => {
             <button
               type="button"
               onClick={handleClose}
-              className="self-end mb-4"
+              className="self-end mb-4 p-1 hover:bg-gray-100 rounded-lg transition"
               aria-label="Close menu"
             >
               <RxCross2 className="text-[#343C6A] text-xl" />
             </button>
 
             {menuItems.map((item) => {
-              const colorClass = "text-[#1814F3]";
+              const isActive = checkIsActive(item.path);
+              const textColorClass = isActive
+                ? "text-[#1814F3]"
+                : "text-[#B1B1B1]";
               const Icon = item.icon;
 
               return (
@@ -198,21 +203,31 @@ const DashboardLayout = () => {
                   key={item.path}
                   to={item.path}
                   onClick={handleClose}
-                  className={`flex items-center gap-3 font-medium text-[15px] py-2.5 px-2 rounded-lg hover:bg-[#F5F7FA] transition ${colorClass}`}
+                  className={`flex items-center gap-3 font-medium text-[15px] py-2.5 px-3 rounded-lg hover:bg-[#F5F7FA] transition relative ${textColorClass}`}
                 >
+                  {/* Active Indicator Line */}
+                  {isActive && (
+                    <span className="absolute left-0 top-0 bottom-0 w-1 bg-[#1814F3] rounded-r-md" />
+                  )}
+
+                  {/* Dynamic Image or Icon */}
                   {item.isImage ? (
                     <img
                       src={item.icon as string}
                       alt=""
                       className="w-5 h-5 shrink-0 transition-all duration-200"
                       style={{
-                        filter: BRAND_IMAGE_FILTER,
+                        filter: isActive
+                          ? ACTIVE_IMAGE_FILTER
+                          : INACTIVE_IMAGE_FILTER,
                       }}
                     />
                   ) : (
-                    <Icon className={`w-5 h-5 shrink-0 ${colorClass}`} />
+                    <Icon className={`w-5 h-5 shrink-0 ${textColorClass}`} />
                   )}
-                  <span className={colorClass}>{item.label}</span>
+
+                  {/* Text Label */}
+                  <span className={textColorClass}>{item.label}</span>
                 </Link>
               );
             })}
