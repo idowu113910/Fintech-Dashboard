@@ -1,4 +1,4 @@
-import { useState, useRef, ChangeEvent } from "react";
+import { useState, useRef, type ChangeEvent } from "react";
 import profilePic from "../assets/image.svg";
 import editIcon from "../assets/edit icon.svg";
 
