@@ -1,14 +1,14 @@
 import { SiMastercard } from "react-icons/si";
 import chip from "../assets/chip.svg";
-import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 import cardType from "../assets/Card Type.svg";
 import cardType2 from "../assets/Card Type 2.svg";
 import cardType3 from "../assets/Card Type 3.svg";
 import block from "../assets/block card image.svg";
 import block2 from "../assets/Change Pic code.svg";
 import block3 from "../assets/Add to Google Pay.svg";
-import block4 from "../assets/APple.svg";
-import block5 from "../assets/Apple Store.svg";
+import { LiaApple } from "react-icons/lia";
+import credit from "../assets/CREDIT BUREAU.svg";
+import type { ReactNode } from "react";
 
 const Credit = () => {
   interface CreditCard {
@@ -44,10 +44,10 @@ const Credit = () => {
   ];
 
   const data = [
-    { name: "DBL Bank", value: 25, color: "#718EBF" },
-    { name: "ABM Bank", value: 25, color: "#718EBF" },
-    { name: "BRC Bank", value: 25, color: "#718EBF" },
-    { name: "MCP Bank", value: 25, color: "#718EBF" },
+    { name: "DBL Bank", value: 25, color: "#2D60FF" },
+    { name: "ABM Bank", value: 25, color: "#FF82AC" },
+    { name: "BRC Bank", value: 25, color: "#16DBAA" },
+    { name: "MCP Bank", value: 25, color: "#FCAA0B" },
   ];
 
   interface CardDetail {
@@ -80,7 +80,7 @@ const Credit = () => {
 
   interface Cards {
     id: number;
-    image: string;
+    image: string | ReactNode;
     title: string;
     description: string;
   }
@@ -109,14 +109,13 @@ const Credit = () => {
 
     {
       id: 4,
-      image: block4,
+      image: <LiaApple className="w-6 h-6 text-[#16DBCC]" />,
       title: "Add to Apple Pay",
       description: "Withdraw without any card",
     },
-
     {
       id: 5,
-      image: block5,
+      image: <LiaApple className="w-6 h-6 text-[#16DBCC]" />,
       title: "Add to Apple Store",
       description: "Withdraw without any card",
     },
@@ -191,49 +190,24 @@ const Credit = () => {
       </div>
 
       {/* Expense Statistics Chart Card */}
+      <h3 className="text-[16px] font-semibold text-[#333B69] mb-3 mt-4">
+        Card Expense Statistics
+      </h3>
       <div className="w-full bg-white rounded-2xl p-4 sm:p-5 mt-4">
-        <h3 className="text-base font-semibold text-gray-800 mb-3">
-          Card Expense Statistics
-        </h3>
-
         <div className="relative flex flex-col items-center">
           <div className="h-44 w-full max-w-55">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={data}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={55}
-                  outerRadius={80}
-                  paddingAngle={0}
-                  dataKey="value"
-                  stroke="white"
-                  strokeWidth={1}
-                >
-                  {data.map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={entry.color}
-                      style={{
-                        filter: "drop-shadow(0 2px 3px rgba(0,0,0,0.1))",
-                      }}
-                    />
-                  ))}
-                </Pie>
-              </PieChart>
-            </ResponsiveContainer>
+            <img src={credit} alt="" />
           </div>
 
           {/* Legend */}
-          <div className="grid grid-cols-2 gap-x-4 sm:gap-x-6 gap-y-1.5 mt-3 text-center sm:text-left">
+          <div className="grid grid-cols-2 gap-x-4 sm:gap-x-6 gap-y-1.5 mt-12 text-center sm:text-left">
             {data.map((item) => (
               <div key={item.name} className="flex items-center gap-1.5">
                 <span
                   className="w-2.5 h-2.5 rounded-full shrink-0"
                   style={{ backgroundColor: item.color }}
                 />
-                <span className="text-xs text-gray-600 truncate">
+                <span className="text-xs text-[#718EBF] truncate">
                   {item.name}
                 </span>
               </div>
@@ -366,22 +340,36 @@ const Credit = () => {
       </h5>
 
       <div className="bg-white rounded-[15px] w-full p-3 flex flex-col mt-4 gap-8">
-        {allCards.map((cards) => (
-          <div key={cards.id}>
-            <div className="flex gap-4">
-              <img src={cards.image} alt="" />
+        {allCards.map((card, index) => {
+          const isLastTwo = index >= allCards.length - 2;
 
-              <div className="flex flex-col mt-1.5">
-                <p className="font-medium text-[14px] text-[#232323]">
-                  {cards.title}
-                </p>
-                <p className="text-[12px] font-normal text-[#718EBF]">
-                  {cards.description}
-                </p>
+          return (
+            <div key={card.id}>
+              <div className="flex gap-4 items-center">
+                {isLastTwo ? (
+                  <div className="w-12 h-12 rounded-[15px] bg-[#DCFAF8] flex items-center justify-center shrink-0">
+                    {card.image}
+                  </div>
+                ) : (
+                  <img
+                    src={card.image as string}
+                    alt={card.title}
+                    className="w-12 h-12 object-contain shrink-0"
+                  />
+                )}
+
+                <div className="flex flex-col">
+                  <p className="font-medium text-[14px] text-[#232323]">
+                    {card.title}
+                  </p>
+                  <p className="text-[12px] font-normal text-[#718EBF]">
+                    {card.description}
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

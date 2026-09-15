@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, ChangeEvent } from "react";
 import profilePic from "../assets/image.svg";
 import editIcon from "../assets/edit icon.svg";
 
@@ -66,7 +66,19 @@ const Settings = () => {
   const [activeTab, setActiveTab] = useState("Edit Profile");
   const [formValues, setFormValues] = useState<Record<string, string>>({});
 
-  // States for Preference Toggles
+  // Loading state for Save button
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Get currently saved image from localStorage (or default fallback)
+  const [savedProfilePic, setSavedProfilePic] = useState<string>(() => {
+    return localStorage.getItem("user_profile_picture") || profilePic;
+  });
+
+  // Staging/Preview state: holds selected image BEFORE saving
+  const [previewPic, setPreviewPic] = useState<string>(savedProfilePic);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const [preferences, setPreferences] = useState({
     currency: "USD",
     timeZone: "(GMT-12:00) International Date Line West",
@@ -75,8 +87,23 @@ const Settings = () => {
     recommendations: true,
   });
 
-  // State for Security Toggle
   const [twoFactorAuth, setTwoFactorAuth] = useState(true);
+
+  const handleEditClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleImageUpload = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result as string;
+        setPreviewPic(base64String); // Stage image temporarily
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleChange = (id: string, value: string) => {
     setFormValues((prev) => ({ ...prev, [id]: value }));
@@ -90,12 +117,28 @@ const Settings = () => {
     setActiveTab(tab);
   };
 
-  const handleSave = () => {
-    console.log("Saving settings for:", activeTab, {
-      formValues,
-      preferences,
-      twoFactorAuth,
-    });
+  // Async save handler with simulated loading delay
+  const handleSave = async () => {
+    setIsLoading(true);
+
+    // Simulate standard request/save delay
+    setTimeout(() => {
+      // 1. Permanently store saved image in localStorage
+      localStorage.setItem("user_profile_picture", previewPic);
+      setSavedProfilePic(previewPic);
+
+      // 2. Trigger global window event to inform DashboardLayout
+      window.dispatchEvent(new Event("profilePicUpdated"));
+
+      setIsLoading(false);
+
+      console.log("Saving settings for:", activeTab, {
+        formValues,
+        preferences,
+        twoFactorAuth,
+        userProfilePic: previewPic,
+      });
+    }, 1200);
   };
 
   const tabs = ["Edit Profile", "Preference", "Security"];
@@ -124,17 +167,26 @@ const Settings = () => {
         {/* TAB 1: EDIT PROFILE */}
         {activeTab === "Edit Profile" && (
           <div className="flex flex-col gap-6">
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleImageUpload}
+              accept="image/*"
+              className="hidden"
+            />
+
             {/* Profile Picture */}
             <div className="flex justify-center">
               <div className="relative w-24 h-24">
                 <img
-                  src={profilePic}
+                  src={previewPic}
                   alt="Profile"
                   className="w-24 h-24 rounded-full object-cover"
                 />
                 <button
                   type="button"
-                  className="absolute bottom-0 right-0 w-7 h-7 rounded-full bg-[#1814F3] flex items-center justify-center border-2 border-white shadow-sm"
+                  onClick={handleEditClick}
+                  className="absolute bottom-0 right-0 w-7 h-7 rounded-full bg-[#1814F3] flex items-center justify-center border-2 border-white shadow-sm cursor-pointer hover:bg-[#0f0cb8] transition"
                 >
                   <img src={editIcon} alt="Edit" className="w-3.5 h-3.5" />
                 </button>
@@ -169,7 +221,6 @@ const Settings = () => {
         {/* TAB 2: PREFERENCE */}
         {activeTab === "Preference" && (
           <div className="flex flex-col gap-5">
-            {/* Currency Input */}
             <div className="flex flex-col gap-1.5">
               <label className="text-[13px] font-normal text-[#232323]">
                 Currency
@@ -185,7 +236,6 @@ const Settings = () => {
               />
             </div>
 
-            {/* Time Zone Input */}
             <div className="flex flex-col gap-1.5">
               <label className="text-[13px] font-normal text-[#232323]">
                 Time Zone
@@ -201,13 +251,11 @@ const Settings = () => {
               />
             </div>
 
-            {/* Notification Section */}
             <div className="flex flex-col gap-4 mt-2">
               <p className="text-[14px] font-medium text-[#333B69]">
                 Notification
               </p>
 
-              {/* Digital Currency Toggle */}
               <div className="flex items-center gap-3">
                 <button
                   type="button"
@@ -236,7 +284,6 @@ const Settings = () => {
                 </span>
               </div>
 
-              {/* Merchant Order Toggle */}
               <div className="flex items-center gap-3">
                 <button
                   type="button"
@@ -263,7 +310,6 @@ const Settings = () => {
                 </span>
               </div>
 
-              {/* Recommendations Toggle */}
               <div className="flex items-center gap-3">
                 <button
                   type="button"
@@ -273,21 +319,18 @@ const Settings = () => {
                       recommendations: !preferences.recommendations,
                     })
                   }
-                  className={`w-12 h-6 flex items-center rounded-full p-0.5 
-                    cursor-pointer transition-colors duration-200 shrink-0 ${
-                      preferences.recommendations
-                        ? "bg-[#16DBCC]"
-                        : "bg-[#E7EDF0]"
-                    }`}
+                  className={`w-12 h-6 flex items-center rounded-full p-0.5 cursor-pointer transition-colors duration-200 shrink-0 ${
+                    preferences.recommendations
+                      ? "bg-[#16DBCC]"
+                      : "bg-[#E7EDF0]"
+                  }`}
                 >
                   <div
-                    className={`bg-white w-5 h-5 rounded-full shadow-md
-                        transform
-                        transition-transform duration-200 ${
-                          preferences.recommendations
-                            ? "translate-x-6"
-                            : "translate-x-0"
-                        }`}
+                    className={`bg-white w-5 h-5 rounded-full shadow-md transform transition-transform duration-200 ${
+                      preferences.recommendations
+                        ? "translate-x-6"
+                        : "translate-x-0"
+                    }`}
                   />
                 </button>
                 <span className="text-[13px] text-[#232323] font-normal leading-tight">
@@ -301,7 +344,6 @@ const Settings = () => {
         {/* TAB 3: SECURITY */}
         {activeTab === "Security" && (
           <div className="flex flex-col gap-5">
-            {/* Two-Factor Authentication Section */}
             <div className="flex flex-col gap-2">
               <p className="text-[14px] font-medium text-[#333B69]">
                 Two-factor Authentication
@@ -326,7 +368,6 @@ const Settings = () => {
               </div>
             </div>
 
-            {/* Change Password Section */}
             <div className="flex flex-col gap-4 mt-2">
               <p className="text-[14px] font-medium text-[#232323]">
                 Change Password
@@ -365,14 +406,40 @@ const Settings = () => {
           </div>
         )}
 
-        {/* Save Button */}
+        {/* Save Button with Loading State */}
         <button
           type="button"
           onClick={handleSave}
-          className="w-full bg-[#1814F3] text-white font-medium text-[15px] 
-          rounded-[9px] py-3 mt-8 hover:bg-[#0f0cb8] transition cursor-pointer"
+          disabled={isLoading}
+          className="w-full bg-[#1814F3] text-white font-medium text-[15px] rounded-[9px] py-3 mt-8 hover:bg-[#0f0cb8] transition cursor-pointer flex items-center justify-center gap-2 disabled:opacity-75 disabled:cursor-not-allowed"
         >
-          Save
+          {isLoading ? (
+            <>
+              <svg
+                className="animate-spin h-5 w-5 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+              <span>Saving...</span>
+            </>
+          ) : (
+            "Save"
+          )}
         </button>
       </div>
     </div>

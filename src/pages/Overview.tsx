@@ -92,7 +92,7 @@ const Overview = () => {
       </div>
 
       {/* Credit Cards Horizontal Scroll */}
-      <div className="flex overflow-x-auto gap-2 p-2 sm:p-4 [&::-webkit-scrollbar]:hidden [ms-overflow-style:none] [scrollbar-width:none]">
+      <div className="flex overflow-x-auto gap-2 p-2 sm:p-4 [&::-webkit-scrollbar]:hidden [ms-overflow-style:none] scrollbar-none">
         {mockCards.map((card, index) => {
           const isSecondCard = index === 1;
 

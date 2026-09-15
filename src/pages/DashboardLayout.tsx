@@ -1,6 +1,6 @@
 import { RxHamburgerMenu, RxCross2 } from "react-icons/rx";
 import girl from "../assets/image.svg";
-import { IoIosSearch } from "react-icons/io";
+import { IoIosSearch, IoIosSettings } from "react-icons/io";
 import { useState, useEffect } from "react";
 import { Link, useLocation, Outlet } from "react-router-dom";
 import { AiFillHome } from "react-icons/ai";
@@ -10,12 +10,19 @@ import investment from "../assets/investments.svg";
 import credit from "../assets/credit cards.svg";
 import loan from "../assets/Loans.svg";
 import service from "../assets/services.svg";
-import { IoIosSettings } from "react-icons/io";
 
-const menuItems = [
+interface MenuItem {
+  label: string;
+  title: string;
+  path: string;
+  icon: any;
+  isImage: boolean;
+}
+
+const menuItems: MenuItem[] = [
   {
-    label: "Dashboard", // shown in the slide-in drawer
-    title: "Overview", // shown in the h1 header
+    label: "Dashboard",
+    title: "Overview",
     path: "/",
     icon: AiFillHome,
     isImage: false,
@@ -71,16 +78,9 @@ const menuItems = [
   },
 ];
 
-// CSS filter approximation to tint a black/dark SVG image to match
-// the brand blue (#2D60FF). Since <img>-based SVGs can't be recolored
-// with text-color classes the way icon-font components can, this
-// filter chain is the standard workaround for tinting raster/image
-// icons to a specific color.
 const ACTIVE_IMAGE_FILTER =
-  "invert(32%) sepia(93%) saturate(1352%) hue-rotate(213deg) brightness(97%) contrast(101%)";
+  "invert(13%) sepia(94%) saturate(7191%) hue-rotate(244deg) brightness(96%) contrast(106%)";
 
-// Tints the image to the inactive gray (#B1B1B1) the same way, so both
-// states are true color matches instead of just opacity/grayscale.
 const INACTIVE_IMAGE_FILTER =
   "invert(72%) sepia(0%) saturate(0%) hue-rotate(180deg) brightness(90%) contrast(90%)";
 
@@ -88,6 +88,24 @@ const DashboardLayout = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const location = useLocation();
+
+  // Shared state for the navbar profile picture
+  const [navbarProfilePic, setNavbarProfilePic] = useState<string>(() => {
+    return localStorage.getItem("user_profile_picture") || girl;
+  });
+
+  // Event listener to reactively update the avatar when user saves in Settings
+  useEffect(() => {
+    const handleUpdate = () => {
+      const updatedPic = localStorage.getItem("user_profile_picture");
+      if (updatedPic) {
+        setNavbarProfilePic(updatedPic);
+      }
+    };
+
+    window.addEventListener("profilePicUpdated", handleUpdate);
+    return () => window.removeEventListener("profilePicUpdated", handleUpdate);
+  }, []);
 
   useEffect(() => {
     if (isMenuOpen) {
@@ -103,19 +121,20 @@ const DashboardLayout = () => {
     setTimeout(() => setIsMenuOpen(false), 300);
   };
 
-  // Find the matching menu item for the current route. The h1 uses
-  // `title` (e.g. "Overview"), while the drawer uses `label`
-  // (e.g. "Dashboard") — same route, two different display strings.
-  const currentPage = menuItems.find((item) => item.path === location.pathname);
+  const checkIsActive = (path: string) => {
+    if (path === "/") {
+      return location.pathname === "/";
+    }
+    return location.pathname.startsWith(path);
+  };
+
+  const currentPage = menuItems.find((item) => checkIsActive(item.path));
   const pageTitle = currentPage ? currentPage.title : "Overview";
 
   return (
-    // min-h-screen + bg color here wraps the header AND the <Outlet />
-    // below, so every page rendered through this layout inherits the
-    // same background color across the full height of the viewport.
     <div className="min-h-dvh bg-[#F5F7FA]">
       <div className="p-7 px-4">
-        <div className="flex px-4 gap-8 justify-between">
+        <div className="flex px-4 gap-8 justify-between items-center">
           <button
             type="button"
             onClick={() => setIsMenuOpen(true)}
@@ -128,7 +147,12 @@ const DashboardLayout = () => {
             {pageTitle}
           </h1>
 
-          <img src={girl} alt="" className="w-8.75 h-8.75" />
+          {/* Dynamically updated profile picture */}
+          <img
+            src={navbarProfilePic}
+            alt="User Profile"
+            className="w-8.75 h-8.75 rounded-full object-cover"
+          />
         </div>
 
         <div className="w-full px-4 mt-12">
@@ -138,7 +162,7 @@ const DashboardLayout = () => {
               placeholder="Search for something"
               className="w-full h-12 rounded-[40px] py-3.5 pl-11 pr-11 outline-none bg-white placeholder:text-[13px] text-[#8BA3CB] font-normal"
             />
-            <IoIosSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8BA3CB]  pointer-events-none" />
+            <IoIosSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8BA3CB] pointer-events-none" />
           </div>
         </div>
       </div>
@@ -168,8 +192,9 @@ const DashboardLayout = () => {
             </button>
 
             {menuItems.map((item) => {
-              const isActive = location.pathname === item.path;
-              const colorClass = isActive ? "text-[#2D60FF]" : "text-[#B1B1B1]";
+              const isActive = checkIsActive(item.path);
+              const colorClass = isActive ? "text-[#1814F3]" : "text-[#B1B1B1]";
+              const Icon = item.icon;
 
               return (
                 <Link
@@ -190,16 +215,9 @@ const DashboardLayout = () => {
                       }}
                     />
                   ) : (
-                    (() => {
-                      const Icon = item.icon as React.ComponentType<{
-                        className?: string;
-                      }>;
-                      return (
-                        <Icon className={`w-5 h-5 shrink-0 ${colorClass}`} />
-                      );
-                    })()
+                    <Icon className={`w-5 h-5 shrink-0 ${colorClass}`} />
                   )}
-                  <span>{item.label}</span>
+                  <span className={colorClass}>{item.label}</span>
                 </Link>
               );
             })}
@@ -207,8 +225,6 @@ const DashboardLayout = () => {
         </div>
       )}
 
-      {/* Each page's actual content renders here — inherits the
-          same #F5F7FA background from the wrapping div above */}
       <Outlet />
     </div>
   );
