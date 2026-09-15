@@ -78,13 +78,13 @@ const menuItems: MenuItem[] = [
   },
 ];
 
-// SVG filter tuned for active state (#1814F3)
+// Forces image to black first, then precisely converts black to #1814F3
 const ACTIVE_IMAGE_FILTER =
-  "invert(13%) sepia(94%) saturate(7191%) hue-rotate(244deg) brightness(96%) contrast(106%)";
+  "brightness(0) saturate(100%) invert(18%) sepia(90%) saturate(6000%) hue-rotate(241deg) brightness(96%) contrast(106%)";
 
-// SVG filter tuned for unclicked/inactive state (#B1B1B1)
+// Forces image to black first, then precisely converts black to #B1B1B1
 const INACTIVE_IMAGE_FILTER =
-  "invert(78%) sepia(0%) saturate(0%) hue-rotate(180deg) brightness(88%) contrast(85%)";
+  "brightness(0) saturate(100%) invert(78%) sepia(0%) saturate(0%) brightness(78%) contrast(85%)";
 
 const DashboardLayout = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -167,7 +167,7 @@ const DashboardLayout = () => {
         </div>
       </div>
 
-      {/* Hamburger Menu Drawer */}
+      {/* Hamburger Drawer */}
       {isMenuOpen && (
         <div className="fixed inset-0 z-50 flex">
           <div
@@ -205,12 +205,12 @@ const DashboardLayout = () => {
                   onClick={handleClose}
                   className={`flex items-center gap-3 font-medium text-[15px] py-2.5 px-3 rounded-lg hover:bg-[#F5F7FA] transition relative ${textColorClass}`}
                 >
-                  {/* Active Indicator Line */}
+                  {/* Left indicator line for active item */}
                   {isActive && (
                     <span className="absolute left-0 top-0 bottom-0 w-1 bg-[#1814F3] rounded-r-md" />
                   )}
 
-                  {/* Dynamic Image or Icon */}
+                  {/* Icon or Image Rendering */}
                   {item.isImage ? (
                     <img
                       src={item.icon as string}
@@ -226,7 +226,6 @@ const DashboardLayout = () => {
                     <Icon className={`w-5 h-5 shrink-0 ${textColorClass}`} />
                   )}
 
-                  {/* Text Label */}
                   <span className={textColorClass}>{item.label}</span>
                 </Link>
               );
