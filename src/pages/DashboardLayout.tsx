@@ -78,14 +78,6 @@ const menuItems: MenuItem[] = [
   },
 ];
 
-// Precise CSS filter: forces black base first, then shifts color directly to #1814F3
-const ACTIVE_IMAGE_FILTER =
-  "brightness(0) saturate(100%) invert(18%) sepia(90%) saturate(6000%) hue-rotate(241deg) brightness(96%) contrast(106%)";
-
-// Precise CSS filter: forces black base first, then shifts color directly to #B1B1B1
-const INACTIVE_IMAGE_FILTER =
-  "brightness(0) saturate(100%) invert(78%) sepia(0%) saturate(0%) brightness(78%) contrast(85%)";
-
 const DashboardLayout = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
@@ -195,6 +187,7 @@ const DashboardLayout = () => {
               const isActive = checkIsActive(item.path);
               const activeHex = "#1814F3";
               const inactiveHex = "#B1B1B1";
+              const currentColor = isActive ? activeHex : inactiveHex;
               const Icon = item.icon;
 
               return (
@@ -202,7 +195,7 @@ const DashboardLayout = () => {
                   key={item.path}
                   to={item.path}
                   onClick={handleClose}
-                  style={{ color: isActive ? activeHex : inactiveHex }}
+                  style={{ color: currentColor }}
                   className="flex items-center gap-3 font-medium text-[15px] py-2.5 px-3 rounded-lg hover:bg-[#F5F7FA] transition relative"
                 >
                   {/* Left indicator bar for active item */}
@@ -210,22 +203,26 @@ const DashboardLayout = () => {
                     <span className="absolute left-0 top-0 bottom-0 w-1 bg-[#1814F3] rounded-r-md" />
                   )}
 
-                  {/* Icon Rendering */}
+                  {/* Icon Rendering using CSS Masking for exact deployment color matching */}
                   {item.isImage ? (
-                    <img
-                      src={item.icon as string}
-                      alt=""
-                      className="w-5 h-5 shrink-0 transition-all duration-200"
+                    <div
+                      className="w-5 h-5 shrink-0 transition-colors duration-200"
                       style={{
-                        filter: isActive
-                          ? ACTIVE_IMAGE_FILTER
-                          : INACTIVE_IMAGE_FILTER,
+                        backgroundColor: currentColor,
+                        WebkitMaskImage: `url(${item.icon})`,
+                        maskImage: `url(${item.icon})`,
+                        WebkitMaskRepeat: "no-repeat",
+                        maskRepeat: "no-repeat",
+                        WebkitMaskSize: "contain",
+                        maskSize: "contain",
+                        WebkitMaskPosition: "center",
+                        maskPosition: "center",
                       }}
                     />
                   ) : (
                     <Icon
                       className="w-5 h-5 shrink-0 transition-colors duration-200"
-                      style={{ color: isActive ? activeHex : inactiveHex }}
+                      style={{ color: currentColor }}
                     />
                   )}
 
