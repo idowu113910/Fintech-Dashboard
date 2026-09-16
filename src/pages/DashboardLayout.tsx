@@ -132,7 +132,7 @@ const DashboardLayout = () => {
   const pageTitle = currentPage ? currentPage.title : "Overview";
 
   return (
-    <div className="min-h-dvh bg-[#F5F7FA]">
+    <div className="min-h-screen min-h-[100dvh] bg-[#F5F7FA]">
       <div className="p-7 px-4">
         <div className="flex px-4 gap-8 justify-between items-center">
           <button
