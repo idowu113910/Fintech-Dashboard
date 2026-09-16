@@ -78,11 +78,11 @@ const menuItems: MenuItem[] = [
   },
 ];
 
-// Forces image to black first, then precisely converts black to #1814F3
+// Precise CSS filter: forces black base first, then shifts color directly to #1814F3
 const ACTIVE_IMAGE_FILTER =
   "brightness(0) saturate(100%) invert(18%) sepia(90%) saturate(6000%) hue-rotate(241deg) brightness(96%) contrast(106%)";
 
-// Forces image to black first, then precisely converts black to #B1B1B1
+// Precise CSS filter: forces black base first, then shifts color directly to #B1B1B1
 const INACTIVE_IMAGE_FILTER =
   "brightness(0) saturate(100%) invert(78%) sepia(0%) saturate(0%) brightness(78%) contrast(85%)";
 
@@ -193,9 +193,8 @@ const DashboardLayout = () => {
 
             {menuItems.map((item) => {
               const isActive = checkIsActive(item.path);
-              const textColorClass = isActive
-                ? "text-[#1814F3]"
-                : "text-[#B1B1B1]";
+              const activeHex = "#1814F3";
+              const inactiveHex = "#B1B1B1";
               const Icon = item.icon;
 
               return (
@@ -203,14 +202,15 @@ const DashboardLayout = () => {
                   key={item.path}
                   to={item.path}
                   onClick={handleClose}
-                  className={`flex items-center gap-3 font-medium text-[15px] py-2.5 px-3 rounded-lg hover:bg-[#F5F7FA] transition relative ${textColorClass}`}
+                  style={{ color: isActive ? activeHex : inactiveHex }}
+                  className="flex items-center gap-3 font-medium text-[15px] py-2.5 px-3 rounded-lg hover:bg-[#F5F7FA] transition relative"
                 >
-                  {/* Left indicator line for active item */}
+                  {/* Left indicator bar for active item */}
                   {isActive && (
                     <span className="absolute left-0 top-0 bottom-0 w-1 bg-[#1814F3] rounded-r-md" />
                   )}
 
-                  {/* Icon or Image Rendering */}
+                  {/* Icon Rendering */}
                   {item.isImage ? (
                     <img
                       src={item.icon as string}
@@ -223,10 +223,13 @@ const DashboardLayout = () => {
                       }}
                     />
                   ) : (
-                    <Icon className={`w-5 h-5 shrink-0 ${textColorClass}`} />
+                    <Icon
+                      className="w-5 h-5 shrink-0 transition-colors duration-200"
+                      style={{ color: isActive ? activeHex : inactiveHex }}
+                    />
                   )}
 
-                  <span className={textColorClass}>{item.label}</span>
+                  <span>{item.label}</span>
                 </Link>
               );
             })}
