@@ -124,121 +124,123 @@ const DashboardLayout = () => {
   const pageTitle = currentPage ? currentPage.title : "Overview";
 
   return (
-    <div className="min-h-screen min-h-[100vh] min-h-dvh min-h-[100svh] w-full bg-[#F5F7FA] flex flex-col flex-1">
-      {/* Header / Top Section */}
-      <div className="p-7 px-4">
-        <div className="flex px-4 gap-8 justify-between items-center">
-          <button
-            type="button"
-            onClick={() => setIsMenuOpen(true)}
-            aria-label="Open menu"
-            className="p-1 hover:bg-gray-100 rounded-lg transition"
-          >
-            <RxHamburgerMenu className="mt-1 text-2xl text-[#343C6A]" />
-          </button>
-
-          <h1 className="text-[20px] text-[#343C6A] font-semibold">
-            {pageTitle}
-          </h1>
-
-          <img
-            src={navbarProfilePic}
-            alt="User Profile"
-            className="w-9 h-9 rounded-full object-cover border border-gray-200"
-          />
-        </div>
-
-        <div className="w-full px-4 mt-8">
-          <div className="relative w-full">
-            <input
-              type="text"
-              placeholder="Search for something"
-              className="w-full h-12 rounded-[40px] py-3.5 pl-11 pr-11 outline-none bg-white placeholder:text-[13px] text-[#8BA3CB] font-normal border border-transparent focus:border-[#1814F3] transition"
-            />
-            <IoIosSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8BA3CB] text-xl pointer-events-none" />
-          </div>
-        </div>
-      </div>
-
-      {/* Hamburger Drawer */}
-      {isMenuOpen && (
-        <div className="fixed inset-0 z-50 flex">
-          <div
-            className={`absolute inset-0 bg-black/40 transition-opacity duration-300 ${
-              isVisible ? "opacity-100" : "opacity-0"
-            }`}
-            onClick={handleClose}
-          />
-
-          <div
-            className={`relative w-64 max-w-[80%] h-full bg-white shadow-lg p-6 flex flex-col gap-2 transition-transform duration-300 ease-out ${
-              isVisible ? "translate-x-0" : "-translate-x-full"
-            }`}
-          >
+    <>
+      <div className="min-h-screen min-h-[100vh] min-h-dvh min-h-[100svh] w-full bg-[#F5F7FA] flex flex-col flex-1">
+        {/* Header / Top Section */}
+        <div className="p-7 px-4">
+          <div className="flex px-4 gap-8 justify-between items-center">
             <button
               type="button"
-              onClick={handleClose}
-              className="self-end mb-4 p-1 hover:bg-gray-100 rounded-lg transition"
-              aria-label="Close menu"
+              onClick={() => setIsMenuOpen(true)}
+              aria-label="Open menu"
+              className="p-1 hover:bg-gray-100 rounded-lg transition"
             >
-              <RxCross2 className="text-[#343C6A] text-xl" />
+              <RxHamburgerMenu className="mt-1 text-2xl text-[#343C6A]" />
             </button>
 
-            {menuItems.map((item) => {
-              const isActive = checkIsActive(item.path);
-              const activeHex = "#1814F3";
-              const inactiveHex = "#B1B1B1";
-              const currentColor = isActive ? activeHex : inactiveHex;
-              const Icon = item.icon;
+            <h1 className="text-[20px] text-[#343C6A] font-semibold">
+              {pageTitle}
+            </h1>
 
-              return (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  onClick={handleClose}
-                  style={{ color: currentColor }}
-                  className="flex items-center gap-3 font-medium text-[15px] py-2.5 px-3 rounded-lg hover:bg-[#F5F7FA] transition relative"
-                >
-                  {/* Left indicator bar for active item */}
-                  {isActive && (
-                    <span className="absolute left-0 top-0 bottom-0 w-1 bg-[#1814F3] rounded-r-md" />
-                  )}
+            <img
+              src={navbarProfilePic}
+              alt="User Profile"
+              className="w-9 h-9 rounded-full object-cover border border-gray-200"
+            />
+          </div>
 
-                  {/* Bulletproof SVG Masking rendering */}
-                  {item.isImage ? (
-                    <span
-                      className="w-5 h-5 shrink-0 inline-block"
-                      style={{
-                        backgroundColor: currentColor,
-                        WebkitMaskImage: `url("${item.icon}")`,
-                        maskImage: `url("${item.icon}")`,
-                        WebkitMaskSize: "contain",
-                        maskSize: "contain",
-                        WebkitMaskRepeat: "no-repeat",
-                        maskRepeat: "no-repeat",
-                        WebkitMaskPosition: "center",
-                        maskPosition: "center",
-                      }}
-                    />
-                  ) : (
-                    <Icon
-                      className="w-5 h-5 shrink-0 transition-colors duration-200"
-                      style={{ color: currentColor }}
-                    />
-                  )}
-
-                  <span>{item.label}</span>
-                </Link>
-              );
-            })}
+          <div className="w-full px-4 mt-8">
+            <div className="relative w-full">
+              <input
+                type="text"
+                placeholder="Search for something"
+                className="w-full h-12 rounded-[40px] py-3.5 pl-11 pr-11 outline-none bg-white placeholder:text-[13px] text-[#8BA3CB] font-normal border border-transparent focus:border-[#1814F3] transition"
+              />
+              <IoIosSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8BA3CB] text-xl pointer-events-none" />
+            </div>
           </div>
         </div>
-      )}
 
-      <main className="flex-1 w-full flex flex-col">
-        <Outlet />
-      </main>
-    </div>
+        {/* Hamburger Drawer */}
+        {isMenuOpen && (
+          <div className="fixed inset-0 z-50 flex">
+            <div
+              className={`absolute inset-0 bg-black/40 transition-opacity duration-300 ${
+                isVisible ? "opacity-100" : "opacity-0"
+              }`}
+              onClick={handleClose}
+            />
+
+            <div
+              className={`relative w-64 max-w-[80%] h-full bg-white shadow-lg p-6 flex flex-col gap-2 transition-transform duration-300 ease-out ${
+                isVisible ? "translate-x-0" : "-translate-x-full"
+              }`}
+            >
+              <button
+                type="button"
+                onClick={handleClose}
+                className="self-end mb-4 p-1 hover:bg-gray-100 rounded-lg transition"
+                aria-label="Close menu"
+              >
+                <RxCross2 className="text-[#343C6A] text-xl" />
+              </button>
+
+              {menuItems.map((item) => {
+                const isActive = checkIsActive(item.path);
+                const activeHex = "#1814F3";
+                const inactiveHex = "#B1B1B1";
+                const currentColor = isActive ? activeHex : inactiveHex;
+                const Icon = item.icon;
+
+                return (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    onClick={handleClose}
+                    style={{ color: currentColor }}
+                    className="flex items-center gap-3 font-medium text-[15px] py-2.5 px-3 rounded-lg hover:bg-[#F5F7FA] transition relative"
+                  >
+                    {/* Left indicator bar for active item */}
+                    {isActive && (
+                      <span className="absolute left-0 top-0 bottom-0 w-1 bg-[#1814F3] rounded-r-md" />
+                    )}
+
+                    {/* Bulletproof SVG Masking rendering */}
+                    {item.isImage ? (
+                      <span
+                        className="w-5 h-5 shrink-0 inline-block"
+                        style={{
+                          backgroundColor: currentColor,
+                          WebkitMaskImage: `url("${item.icon}")`,
+                          maskImage: `url("${item.icon}")`,
+                          WebkitMaskSize: "contain",
+                          maskSize: "contain",
+                          WebkitMaskRepeat: "no-repeat",
+                          maskRepeat: "no-repeat",
+                          WebkitMaskPosition: "center",
+                          maskPosition: "center",
+                        }}
+                      />
+                    ) : (
+                      <Icon
+                        className="w-5 h-5 shrink-0 transition-colors duration-200"
+                        style={{ color: currentColor }}
+                      />
+                    )}
+
+                    <span>{item.label}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        <main className="flex-1 w-full flex flex-col">
+          <Outlet />
+        </main>
+      </div>
+    </>
   );
 };
 
