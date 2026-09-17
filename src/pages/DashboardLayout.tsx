@@ -7,7 +7,7 @@ import { AiFillHome } from "react-icons/ai";
 import transaction from "../assets/transaction.svg";
 import { FaUser } from "react-icons/fa";
 import investment from "../assets/investments.svg";
-import credit from "../assets/credit cards.svg";
+import credit from "../assets/credit cards.svgg"; // Renamed space to hyphen
 import loan from "../assets/Loans.svg";
 import service from "../assets/services.svg";
 
@@ -203,18 +203,22 @@ const DashboardLayout = () => {
                     <span className="absolute left-0 top-0 bottom-0 w-1 bg-[#1814F3] rounded-r-md" />
                   )}
 
-                  {/* Icon Rendering - Drop-shadow projection guarantees exact hex color while staying 100% visible */}
+                  {/* Bulletproof SVG Masking rendering */}
                   {item.isImage ? (
-                    <div className="w-5 h-5 shrink-0 overflow-hidden relative">
-                      <img
-                        src={item.icon as string}
-                        alt=""
-                        className="w-5 h-5 shrink-0 absolute left-[-100px] top-0"
-                        style={{
-                          filter: `drop-shadow(100px 0 0 ${currentColor})`,
-                        }}
-                      />
-                    </div>
+                    <span
+                      className="w-5 h-5 shrink-0 inline-block"
+                      style={{
+                        backgroundColor: currentColor,
+                        WebkitMaskImage: `url("${item.icon}")`,
+                        maskImage: `url("${item.icon}")`,
+                        WebkitMaskSize: "contain",
+                        maskSize: "contain",
+                        WebkitMaskRepeat: "no-repeat",
+                        maskRepeat: "no-repeat",
+                        WebkitMaskPosition: "center",
+                        maskPosition: "center",
+                      }}
+                    />
                   ) : (
                     <Icon
                       className="w-5 h-5 shrink-0 transition-colors duration-200"
