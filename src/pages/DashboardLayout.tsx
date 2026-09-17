@@ -203,22 +203,18 @@ const DashboardLayout = () => {
                     <span className="absolute left-0 top-0 bottom-0 w-1 bg-[#1814F3] rounded-r-md" />
                   )}
 
-                  {/* Icon Rendering using CSS Masking for exact deployment color matching */}
+                  {/* Icon Rendering - Drop-shadow projection guarantees exact hex color while staying 100% visible */}
                   {item.isImage ? (
-                    <div
-                      className="w-5 h-5 shrink-0 transition-colors duration-200"
-                      style={{
-                        backgroundColor: currentColor,
-                        WebkitMaskImage: `url(${item.icon})`,
-                        maskImage: `url(${item.icon})`,
-                        WebkitMaskRepeat: "no-repeat",
-                        maskRepeat: "no-repeat",
-                        WebkitMaskSize: "contain",
-                        maskSize: "contain",
-                        WebkitMaskPosition: "center",
-                        maskPosition: "center",
-                      }}
-                    />
+                    <div className="w-5 h-5 shrink-0 overflow-hidden relative">
+                      <img
+                        src={item.icon as string}
+                        alt=""
+                        className="w-5 h-5 shrink-0 absolute left-[-100px] top-0"
+                        style={{
+                          filter: `drop-shadow(100px 0 0 ${currentColor})`,
+                        }}
+                      />
+                    </div>
                   ) : (
                     <Icon
                       className="w-5 h-5 shrink-0 transition-colors duration-200"
