@@ -7,7 +7,7 @@ import { AiFillHome } from "react-icons/ai";
 import transaction from "../assets/transaction.svg";
 import { FaUser } from "react-icons/fa";
 import investment from "../assets/investments.svg";
-import credit from "../assets/credit cards.svgg"; // Renamed space to hyphen
+import credit from "../assets/credit cards.svg"; // Renamed space to hyphen
 import loan from "../assets/Loans.svg";
 import service from "../assets/services.svg";
 
