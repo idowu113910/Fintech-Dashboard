@@ -163,17 +163,20 @@ const DashboardLayout = () => {
         </div>
 
         {/* Hamburger Drawer */}
+        {/* Hamburger Drawer */}
         {isMenuOpen && (
-          <div className="fixed inset-0 z-50 flex">
+          <div className="fixed inset-0 z-50 flex h-screen h-[100dvh] min-h-[-webkit-fill-available] w-full">
+            {/* Backdrop */}
             <div
-              className={`absolute inset-0 bg-black/40 transition-opacity duration-300 ${
+              className={`fixed inset-0 bg-black/40 transition-opacity duration-300 ${
                 isVisible ? "opacity-100" : "opacity-0"
               }`}
               onClick={handleClose}
             />
 
+            {/* Drawer Panel */}
             <div
-              className={`relative w-64 max-w-[80%] h-full bg-white shadow-lg p-6 flex flex-col gap-2 transition-transform duration-300 ease-out ${
+              className={`relative w-64 max-w-[80%] h-full min-h-[-webkit-fill-available] bg-white shadow-lg p-6 flex flex-col gap-2 transition-transform duration-300 ease-out z-10 ${
                 isVisible ? "translate-x-0" : "-translate-x-full"
               }`}
             >
@@ -206,7 +209,7 @@ const DashboardLayout = () => {
                       <span className="absolute left-0 top-0 bottom-0 w-1 bg-[#1814F3] rounded-r-md" />
                     )}
 
-                    {/* Bulletproof SVG Masking rendering */}
+                    {/* SVG Mask rendering */}
                     {item.isImage ? (
                       <span
                         className="w-5 h-5 shrink-0 inline-block"
