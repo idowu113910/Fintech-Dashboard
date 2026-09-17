@@ -154,7 +154,8 @@ const DashboardLayout = () => {
               <input
                 type="text"
                 placeholder="Search for something"
-                className="w-full h-12 rounded-[40px] py-3.5 pl-11 pr-11 outline-none bg-white placeholder:text-[13px] text-[#8BA3CB] font-normal border border-transparent focus:border-[#1814F3] transition"
+                className="w-full h-12 rounded-[40px] py-3.5 pl-11 pr-11 outline-none bg-white placeholder:text-[13px]
+                 text-[#8BA3CB] font-normal border border-transparent focus:border-[#1814F3] transition"
               />
               <IoIosSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8BA3CB] text-xl pointer-events-none" />
             </div>
