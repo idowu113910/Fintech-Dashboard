@@ -125,7 +125,7 @@ const DashboardLayout = () => {
 
   return (
     <>
-      <div className="min-h-screen min-h-[100vh] min-h-dvh min-h-[100svh] w-full bg-[#F5F7FA] flex flex-col flex-1">
+      <div className="min-h-screen min-h-[100vh] min-h-dvh min-h-[100svh] w-full bg-[#F5F7FA] flex flex-col flex-1 -mt-20">
         {/* Header / Top Section */}
         <div className="p-7 px-4">
           <div className="flex px-4 gap-8 justify-between items-center">
